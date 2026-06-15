@@ -10,7 +10,7 @@
   <nav class="nav">
     <div class="nav__brand">
       <span class="nav__logo">&#9789;</span>
-      <span class="nav__name">Tahfiz System</span>
+      <span class="nav__name">Isha Umu Ebrima</span>
     </div>
 
     <% if (user) { %>
@@ -35,6 +35,33 @@
         <button type="submit" class="nav__logout">Sign out</button>
       </form>
     </div>
+
+    <button class="nav__hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false">&#9776;</button>
+
+    <div class="nav__mobile-menu">
+      <ul class="nav__mobile-links">
+        <li><a href="/" class="nav__mobile-link <%= activePage === 'dashboard' ? 'nav__mobile-link--active' : '' %>">Dashboard</a></li>
+        <li><a href="/students" class="nav__mobile-link <%= activePage === 'students' ? 'nav__mobile-link--active' : '' %>">Students</a></li>
+        <% if (user.role === 'admin' || user.role === 'teacher') { %>
+        <li><a href="/sessions/log" class="nav__mobile-link <%= activePage === 'sessions' ? 'nav__mobile-link--active' : '' %>">Log Session</a></li>
+        <% } %>
+        <% if (user.role === 'admin' || user.role === 'secretary') { %>
+        <li><a href="/payments" class="nav__mobile-link <%= activePage === 'payments' ? 'nav__mobile-link--active' : '' %>">Payments</a></li>
+        <% } %>
+        <% if (user.role === 'admin') { %>
+        <li><a href="/users" class="nav__mobile-link <%= activePage === 'users' ? 'nav__mobile-link--active' : '' %>">Users</a></li>
+        <% } %>
+      </ul>
+      <div class="nav__mobile-footer">
+        <span class="nav__mobile-user">
+          <%= user.full_name %>
+          <span class="role-badge role-badge--<%= user.role %>"><%= user.role %></span>
+        </span>
+        <form action="/logout" method="POST">
+          <button type="submit" class="nav__logout nav__logout--full">Sign out</button>
+        </form>
+      </div>
+    </div>
     <% } %>
   </nav>
 
@@ -50,3 +77,26 @@
       <% }); %>
     <% } %>
 
+<script>
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var hamburger = document.getElementById('nav-hamburger');
+    if (!hamburger) return;
+    var nav = hamburger.closest('.nav');
+
+    hamburger.addEventListener('click', function () {
+      var isOpen = nav.classList.toggle('nav--open');
+      hamburger.innerHTML = isOpen ? '&#x2715;' : '&#9776;';
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.querySelectorAll('.nav__mobile-link').forEach(function (link) {
+      link.addEventListener('click', function () {
+        nav.classList.remove('nav--open');
+        hamburger.innerHTML = '&#9776;';
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  });
+})();
+</script>
