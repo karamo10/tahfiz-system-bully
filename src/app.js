@@ -52,6 +52,7 @@ app.use((req, res, next) => {
   res.locals.user    = req.session.user || null;
   res.locals.error   = req.flash('error');
   res.locals.success = req.flash('success');
+  res.locals.activePage = req.path.split('/')[1] || 'dashboard';
   next();
 });
 

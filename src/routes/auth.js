@@ -9,7 +9,7 @@ router.get('/login', (req, res) => {
   res.render('auth/login', {
     user: null,
     error: req.flash('error'),
-    success: req.flash('success')
+    success: req.flash('success'),
   });
 });
 
@@ -23,9 +23,9 @@ router.post('/login', (req, res) => {
   }
 
   try {
-    const staff = db.prepare(
-      'SELECT * FROM user WHERE email = ? AND is_active = 1'
-    ).get(email.trim().toLowerCase());
+    const staff = db
+      .prepare('SELECT * FROM user WHERE email = ? AND is_active = 1')
+      .get(email.trim().toLowerCase());
 
     if (!staff || !bcrypt.compareSync(password, staff.password_hash)) {
       req.flash('error', 'Invalid email or password.');
@@ -33,13 +33,20 @@ router.post('/login', (req, res) => {
     }
 
     req.session.user = {
-      id:        staff.id,
+      id: staff.id,
       full_name: staff.full_name,
-      email:     staff.email,
-      role:      staff.role
+      email: staff.email,
+      role: staff.role,
     };
 
-    res.redirect('/');
+    req.session.save((err) => {
+      if (err) {
+        console.error(err);
+        req.flash('error', 'Login failed. Please try again.');
+        return res.redirect('/login');
+      }
+      res.redirect('/');
+    });
   } catch (err) {
     console.error(err);
     req.flash('error', 'Something went wrong. Please try again.');
