@@ -4,7 +4,7 @@
   "description": "Tahfiz School Management System",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node src/db/seed.js && node src/app.js",
     "dev": "nodemon src/app.js",
     "seed": "node src/db/seed.js"
   },
