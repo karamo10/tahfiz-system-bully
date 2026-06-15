@@ -1,0 +1,16 @@
+<%
+const activePage   = '';
+const pageTitle    = 'Error';
+const flashError   = [];
+const flashSuccess = [];
+%>
+<%- include('layout/base') %>
+
+<div class="error-page">
+  <div class="error-page__icon">&#9888;</div>
+  <h1 class="error-page__title">Something went wrong</h1>
+  <p class="error-page__message"><%= message || 'An unexpected error occurred.' %></p>
+  <a href="/" class="btn btn--primary">Go to dashboard</a>
+</div>
+
+<%- include('layout/footer') %>

@@ -1,0 +1,110 @@
+<%
+const activePage   = 'payments';
+const pageTitle    = 'Payments';
+const flashError   = error;
+const flashSuccess = success;
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Payments</h1>
+    <p class="page-subtitle"><%= months[selectedMonth] %> <%= selectedYear %></p>
+  </div>
+  <div class="page-header__actions">
+    <a href="/payments/entry" class="btn btn--primary">+ Record payment</a>
+  </div>
+</div>
+
+<!-- Month/year filter -->
+<form class="filter-bar" action="/payments" method="GET">
+  <select class="form-select" name="month">
+    <% for (let i = 1; i <= 12; i++) { %>
+    <option value="<%= i %>" <%= i === selectedMonth ? 'selected' : '' %>><%= months[i] %></option>
+    <% } %>
+  </select>
+  <input class="form-input" type="number" name="year" value="<%= selectedYear %>" min="2020" max="2099" style="width:100px">
+  <button type="submit" class="btn btn--outline">Filter</button>
+</form>
+
+<!-- Totals summary -->
+<div class="stat-grid" style="margin-bottom:24px">
+  <div class="stat-card stat-card--success">
+    <div class="stat-card__value">D <%= totals.paid.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Collected</div>
+  </div>
+  <div class="stat-card stat-card--warning">
+    <div class="stat-card__value">D <%= totals.outstanding.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Outstanding</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">D <%= totals.due.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Total due</div>
+  </div>
+</div>
+
+<div class="card">
+  <% if (payments.length > 0) { %>
+  <table class="table table--hoverable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Amount due</th>
+        <th>Amount paid</th>
+        <th>Balance</th>
+        <th>Status</th>
+        <th>Paid date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% payments.forEach(function(p) { %>
+      <tr>
+        <td><a href="/students/<%= p.student_id %>" class="link"><%= p.student_name %></a></td>
+        <td>D <%= p.amount_due.toLocaleString('en-GM') %></td>
+        <td>D <%= p.amount_paid.toLocaleString('en-GM') %></td>
+        <td><%= p.amount_due > p.amount_paid ? 'D ' + (p.amount_due - p.amount_paid).toLocaleString('en-GM') : '—' %></td>
+        <td>
+          <span class="badge badge--<%= p.status === 'paid' ? 'success' : p.status === 'partial' ? 'warning' : 'danger' %>">
+            <%= p.status %>
+          </span>
+        </td>
+        <td><%= fmtDate(p.paid_date) %></td>
+        <td>
+          <a href="/payments/entry?student_id=<%= p.student_id %>" class="link">Edit</a>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No payment records for this period.</p>
+  <% } %>
+</div>
+
+<% if (noRecord && noRecord.length > 0) { %>
+<div class="card" style="margin-top:24px">
+  <div class="card__header">
+    <h2 class="card__title">No record this month (<%= noRecord.length %>)</h2>
+  </div>
+  <p class="text-muted" style="padding:0 16px 8px">Active students with no payment entry for <%= months[selectedMonth] %> <%= selectedYear %>.</p>
+  <table class="table">
+    <thead><tr><th>Student</th><th></th></tr></thead>
+    <tbody>
+      <% noRecord.forEach(function(s) { %>
+      <tr>
+        <td><a href="/students/<%= s.id %>" class="link"><%= s.full_name %></a></td>
+        <td><a href="/payments/entry?student_id=<%= s.id %>" class="link">Record payment</a></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<%- include('../layout/footer') %>

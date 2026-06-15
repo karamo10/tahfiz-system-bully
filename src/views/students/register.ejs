@@ -1,0 +1,144 @@
+<%
+const activePage   = 'students';
+const pageTitle    = 'Register Student';
+const flashError   = error;
+const flashSuccess = success;
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Register student</h1>
+    <p class="page-subtitle"><a href="/students" class="link">← Back to students</a></p>
+  </div>
+</div>
+
+<div class="form-card">
+  <form action="/students/register" method="POST" id="register-form">
+
+    <div class="form-section">
+      <h2 class="form-section__title">Personal information</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label form-label--required" for="full_name">Full name</label>
+          <input class="form-input" type="text" id="full_name" name="full_name" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_of_birth">Date of birth</label>
+          <input class="form-input" type="date" id="date_of_birth" name="date_of_birth">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phone">Student phone</label>
+          <input class="form-input" type="tel" id="phone" name="phone" placeholder="e.g. 7701234">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="guardian_name">Guardian name</label>
+          <input class="form-input" type="text" id="guardian_name" name="guardian_name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="guardian_phone">Guardian phone</label>
+          <input class="form-input" type="tel" id="guardian_phone" name="guardian_phone" placeholder="e.g. 9901234">
+        </div>
+        <div class="form-group">
+          <label class="form-label form-label--required" for="assigned_teacher_id">Assigned teacher</label>
+          <select class="form-select" id="assigned_teacher_id" name="assigned_teacher_id" required>
+            <option value="">— Select teacher —</option>
+            <% teachers.forEach(function(t) { %>
+            <option value="<%= t.id %>"><%= t.full_name %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="form-section__title">Placement assessment</h2>
+
+      <div class="form-group">
+        <label class="form-label form-label--required">Entry level</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="entry_level" value="qaida" id="level_qaida" checked>
+            <span>Qa'ida (starting from alphabet)</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="entry_level" value="quran" id="level_quran">
+            <span>Quran (continuing from a surah)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Qaida fields -->
+      <div id="qaida-fields">
+        <div class="form-group">
+          <label class="form-label" for="qaida_level">Qa'ida level</label>
+          <select class="form-select" id="qaida_level" name="qaida_level">
+            <option value="qaida_1">Level 1 — Alphabet basics</option>
+            <option value="qaida_2">Level 2 — Letter joining</option>
+            <option value="qaida_3">Level 3 — Harakat</option>
+            <option value="qaida_4">Level 4 — Tanwin &amp; Sukun</option>
+            <option value="qaida_5">Level 5 — Madd &amp; Shadda</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quran fields -->
+      <div id="quran-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="entry_surah_id">Starting surah</label>
+            <select class="form-select" id="entry_surah_id" name="entry_surah_id">
+              <option value="">— Select surah —</option>
+              <% surahs.forEach(function(s) { %>
+              <option value="<%= s.id %>"><%= s.number %>. <%= s.name_en %> (<%= s.name_ar %>)</option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="entry_ayah">Starting ayah</label>
+            <input class="form-input" type="number" id="entry_ayah" name="entry_ayah"
+                   min="1" placeholder="e.g. 1">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="form-section__title">Notes</h2>
+      <div class="form-group">
+        <label class="form-label" for="notes">Additional notes</label>
+        <textarea class="form-textarea" id="notes" name="notes" rows="3"
+                  placeholder="Any relevant notes about this student..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/students" class="btn btn--outline">Cancel</a>
+      <button type="submit" class="btn btn--primary">Register student</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+(function() {
+  const radios = document.querySelectorAll('input[name="entry_level"]');
+  const qaidaFields = document.getElementById('qaida-fields');
+  const quranFields = document.getElementById('quran-fields');
+
+  function toggle() {
+    const val = document.querySelector('input[name="entry_level"]:checked').value;
+    qaidaFields.style.display = val === 'qaida' ? '' : 'none';
+    quranFields.style.display = val === 'quran' ? '' : 'none';
+  }
+
+  radios.forEach(function(r) { r.addEventListener('change', toggle); });
+  toggle();
+})();
+</script>
+
+<%- include('../layout/footer') %>

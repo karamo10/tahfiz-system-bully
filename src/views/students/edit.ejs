@@ -1,0 +1,90 @@
+<%
+const activePage   = 'students';
+const pageTitle    = 'Edit — ' + student.full_name;
+const flashError   = error;
+const flashSuccess = success;
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <p class="page-subtitle"><a href="/students/<%= student.id %>" class="link">← <%= student.full_name %></a></p>
+    <h1 class="page-title">Edit student</h1>
+  </div>
+</div>
+
+<div class="form-card">
+  <form action="/students/<%= student.id %>/edit" method="POST">
+
+    <div class="form-section">
+      <h2 class="form-section__title">Personal information</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label form-label--required" for="full_name">Full name</label>
+          <input class="form-input" type="text" id="full_name" name="full_name"
+                 value="<%= student.full_name %>" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_of_birth">Date of birth</label>
+          <input class="form-input" type="date" id="date_of_birth" name="date_of_birth"
+                 value="<%= student.date_of_birth || '' %>">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phone">Student phone</label>
+          <input class="form-input" type="tel" id="phone" name="phone"
+                 value="<%= student.phone || '' %>">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="guardian_name">Guardian name</label>
+          <input class="form-input" type="text" id="guardian_name" name="guardian_name"
+                 value="<%= student.guardian_name || '' %>">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="guardian_phone">Guardian phone</label>
+          <input class="form-input" type="tel" id="guardian_phone" name="guardian_phone"
+                 value="<%= student.guardian_phone || '' %>">
+        </div>
+        <div class="form-group">
+          <label class="form-label form-label--required" for="assigned_teacher_id">Assigned teacher</label>
+          <select class="form-select" id="assigned_teacher_id" name="assigned_teacher_id" required>
+            <% teachers.forEach(function(t) { %>
+            <option value="<%= t.id %>" <%= t.id === student.assigned_teacher_id ? 'selected' : '' %>><%= t.full_name %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="form-section__title">Status</h2>
+      <div class="form-group">
+        <label class="form-label form-label--required" for="status">Student status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="active"    <%= student.status === 'active'    ? 'selected' : '' %>>Active</option>
+          <option value="inactive"  <%= student.status === 'inactive'  ? 'selected' : '' %>>Inactive</option>
+          <option value="completed" <%= student.status === 'completed' ? 'selected' : '' %>>Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="form-section__title">Notes</h2>
+      <div class="form-group">
+        <label class="form-label" for="notes">Additional notes</label>
+        <textarea class="form-textarea" id="notes" name="notes" rows="3"><%= student.notes || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/students/<%= student.id %>" class="btn btn--outline">Cancel</a>
+      <button type="submit" class="btn btn--primary">Save changes</button>
+    </div>
+
+  </form>
+</div>
+
+<%- include('../layout/footer') %>

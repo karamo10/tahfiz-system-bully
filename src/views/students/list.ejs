@@ -1,0 +1,64 @@
+<%
+const activePage   = 'students';
+const pageTitle    = 'Students';
+const flashError   = error;
+const flashSuccess = success;
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <h1 class="page-title">Students</h1>
+  <% if (user.role === 'admin' || user.role === 'secretary') { %>
+  <div class="page-header__actions">
+    <a href="/students/register" class="btn btn--primary">+ Register student</a>
+  </div>
+  <% } %>
+</div>
+
+<div class="card">
+  <% if (students.length > 0) { %>
+  <table class="table table--hoverable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Level</th>
+        <th>Teacher</th>
+        <th>Guardian</th>
+        <th>Registered</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% students.forEach(function(s) { %>
+      <tr>
+        <td><strong><%= s.full_name %></strong></td>
+        <td>
+          <span class="tag tag--<%= s.entry_level %>">
+            <%= s.entry_level === 'qaida' ? "Qa'ida" : 'Quran' %>
+          </span>
+        </td>
+        <td><%= s.teacher_name %></td>
+        <td><%= s.guardian_name || '—' %></td>
+        <td><%
+          if (s.registration_date) {
+            const [y,m,d] = s.registration_date.split('-');
+            %><%= d %>/<%= m %>/<%= y %><%
+          } else { %>—<% }
+        %></td>
+        <td>
+          <span class="badge badge--<%= s.status === 'active' ? 'success' : s.status === 'completed' ? 'info' : 'neutral' %>">
+            <%= s.status %>
+          </span>
+        </td>
+        <td><a href="/students/<%= s.id %>" class="link">View</a></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No students found.<% if (user.role !== 'teacher') { %> <a href="/students/register">Register one now.</a><% } %></p>
+  <% } %>
+</div>
+
+<%- include('../layout/footer') %>

@@ -1,0 +1,70 @@
+<%
+const activePage   = 'sessions';
+const pageTitle    = 'Sessions — ' + student.full_name;
+const flashError   = [];
+const flashSuccess = [];
+const gradeLabel   = { excellent: 'Excellent', good: 'Good', needs_work: 'Needs Work', repeat: 'Repeat' };
+const gradeClass   = { excellent: 'success', good: 'info', needs_work: 'warning', repeat: 'danger' };
+const typeLabel    = { hifz: 'Hifz', muraja: "Muraja'a" };
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <p class="page-subtitle"><a href="/students/<%= student.id %>" class="link">← <%= student.full_name %></a></p>
+    <h1 class="page-title">Full session history</h1>
+  </div>
+  <% if (user.role === 'admin' || user.role === 'teacher') { %>
+  <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ Log session</a>
+  <% } %>
+</div>
+
+<div class="card">
+  <% if (sessions.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Grade</th>
+        <th>Teacher</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% sessions.forEach(function(s) { %>
+      <tr>
+        <td><%= fmtDate(s.session_date) %></td>
+        <td><span class="tag tag--<%= s.type %>"><%= typeLabel[s.type] %></span></td>
+        <td>
+          <% if (s.from_surah_name) { %>
+            <abbr title="<%= s.from_surah_ar %>"><%= s.from_surah_name %></abbr> : <%= s.from_ayah %>
+          <% } else if (s.qaida_from) { %><%= s.qaida_from %>
+          <% } else { %>—<% } %>
+        </td>
+        <td>
+          <% if (s.to_surah_name) { %>
+            <abbr title="<%= s.to_surah_ar %>"><%= s.to_surah_name %></abbr> : <%= s.to_ayah %>
+          <% } else if (s.qaida_to) { %><%= s.qaida_to %>
+          <% } else { %>—<% } %>
+        </td>
+        <td><span class="badge badge--<%= gradeClass[s.recitation_grade] %>"><%= gradeLabel[s.recitation_grade] %></span></td>
+        <td><%= s.teacher_name %></td>
+        <td class="text-muted"><%= s.notes || '' %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No sessions logged for this student yet.</p>
+  <% } %>
+</div>
+
+<%- include('../layout/footer') %>

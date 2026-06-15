@@ -1,0 +1,74 @@
+<%
+const activePage   = 'payments';
+const pageTitle    = 'Payments — ' + student.full_name;
+const flashError   = [];
+const flashSuccess = [];
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <p class="page-subtitle"><a href="/students/<%= student.id %>" class="link">← <%= student.full_name %></a></p>
+    <h1 class="page-title">Payment history</h1>
+  </div>
+  <a href="/payments/entry?student_id=<%= student.id %>" class="btn btn--primary">+ Record payment</a>
+</div>
+
+<div class="stat-grid" style="margin-bottom:24px">
+  <div class="stat-card stat-card--success">
+    <div class="stat-card__value">D <%= totals.paid.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Total paid</div>
+  </div>
+  <div class="stat-card stat-card--warning">
+    <div class="stat-card__value">D <%= totals.outstanding.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Outstanding</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">D <%= totals.due.toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Total due</div>
+  </div>
+</div>
+
+<div class="card">
+  <% if (payments.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th>Amount due</th>
+        <th>Amount paid</th>
+        <th>Balance</th>
+        <th>Status</th>
+        <th>Paid date</th>
+        <th>Recorded by</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% payments.forEach(function(p) { %>
+      <tr>
+        <td><%= months[p.month] %> <%= p.year %></td>
+        <td>D <%= p.amount_due.toLocaleString('en-GM') %></td>
+        <td>D <%= p.amount_paid.toLocaleString('en-GM') %></td>
+        <td><%= p.amount_due > p.amount_paid ? 'D ' + (p.amount_due - p.amount_paid).toLocaleString('en-GM') : '—' %></td>
+        <td>
+          <span class="badge badge--<%= p.status === 'paid' ? 'success' : p.status === 'partial' ? 'warning' : 'danger' %>">
+            <%= p.status %>
+          </span>
+        </td>
+        <td><%= fmtDate(p.paid_date) %></td>
+        <td class="text-muted"><%= p.recorded_by_name %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No payment records yet. <a href="/payments/entry?student_id=<%= student.id %>">Record the first one.</a></p>
+  <% } %>
+</div>
+
+<%- include('../layout/footer') %>

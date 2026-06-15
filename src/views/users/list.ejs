@@ -1,0 +1,60 @@
+<%
+const activePage   = 'users';
+const pageTitle    = 'Users';
+const flashError   = typeof error !== 'undefined' ? error : [];
+const flashSuccess = typeof success !== 'undefined' ? success : [];
+function fmtDate(d) {
+  if (!d) return '—';
+  return d.split('T')[0].split('-').reverse().join('/');
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <h1 class="page-title">Users</h1>
+  <a href="/users/new" class="btn btn--primary">+ Add user</a>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Added</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(function(u) { %>
+      <tr>
+        <td><strong><%= u.full_name %></strong></td>
+        <td class="text-muted"><%= u.email %></td>
+        <td><span class="role-badge role-badge--<%= u.role %>"><%= u.role %></span></td>
+        <td>
+          <span class="badge badge--<%= u.is_active ? 'success' : 'neutral' %>">
+            <%= u.is_active ? 'Active' : 'Inactive' %>
+          </span>
+        </td>
+        <td><%= fmtDate(u.created_at) %></td>
+        <td>
+          <% if (u.id !== user.id) { %>
+          <form action="/users/<%= u.id %>/toggle" method="POST" style="display:inline">
+            <button type="submit" class="link"
+                    onclick="return confirm('<%= u.is_active ? 'Deactivate' : 'Activate' %> <%= u.full_name %>?')">
+              <%= u.is_active ? 'Deactivate' : 'Activate' %>
+            </button>
+          </form>
+          <% } else { %>
+          <span class="text-muted">—</span>
+          <% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../layout/footer') %>

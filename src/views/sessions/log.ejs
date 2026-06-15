@@ -1,0 +1,208 @@
+<%
+const activePage   = 'sessions';
+const pageTitle    = 'Log Session';
+const flashError   = error;
+const flashSuccess = success;
+const gradeLabel   = { excellent: 'Excellent', good: 'Good', needs_work: 'Needs Work', repeat: 'Repeat' };
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <h1 class="page-title">Log session</h1>
+</div>
+
+<div class="session-layout">
+
+  <!-- Form -->
+  <div class="form-card">
+    <form action="/sessions/log" method="POST" id="session-form">
+
+      <div class="form-section">
+        <h2 class="form-section__title">Session details</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label form-label--required" for="student_id">Student</label>
+            <select class="form-select" id="student_id" name="student_id" required>
+              <option value="">— Select student —</option>
+              <% students.forEach(function(s) { %>
+              <option value="<%= s.id %>"
+                      data-level="<%= s.entry_level %>"
+                      <%= selectedStudent && selectedStudent.id === s.id ? 'selected' : '' %>>
+                <%= s.full_name %>
+              </option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label form-label--required" for="session_date">Date</label>
+            <input class="form-input" type="date" id="session_date" name="session_date"
+                   value="<%= today %>" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-label--required">Session type</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="type" value="hifz" checked>
+              <span>Hifz — new memorisation</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="type" value="muraja">
+              <span>Muraja'a — revision / recitation review</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quran progress fields -->
+      <div id="quran-fields" class="form-section" style="display:none">
+        <h2 class="form-section__title">Quran progress</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="from_surah_id">From surah</label>
+            <select class="form-select" id="from_surah_id" name="from_surah_id">
+              <option value="">— Select surah —</option>
+              <% surahs.forEach(function(s) { %>
+              <option value="<%= s.id %>"><%= s.number %>. <%= s.name_en %> (<%= s.name_ar %>)</option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="from_ayah">From ayah</label>
+            <input class="form-input" type="number" id="from_ayah" name="from_ayah" min="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="to_surah_id">To surah</label>
+            <select class="form-select" id="to_surah_id" name="to_surah_id">
+              <option value="">— Select surah —</option>
+              <% surahs.forEach(function(s) { %>
+              <option value="<%= s.id %>"><%= s.number %>. <%= s.name_en %> (<%= s.name_ar %>)</option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="to_ayah">To ayah</label>
+            <input class="form-input" type="number" id="to_ayah" name="to_ayah" min="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Qaida progress fields -->
+      <div id="qaida-fields" class="form-section" style="display:none">
+        <h2 class="form-section__title">Qa'ida progress</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qaida_from">From</label>
+            <input class="form-input" type="text" id="qaida_from" name="qaida_from"
+                   placeholder="e.g. Lesson 3 pg 5">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qaida_to">To</label>
+            <input class="form-input" type="text" id="qaida_to" name="qaida_to"
+                   placeholder="e.g. Lesson 3 pg 8">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section__title">Recitation grade</h2>
+        <div class="grade-group">
+          <label class="grade-label grade-label--excellent">
+            <input type="radio" name="recitation_grade" value="excellent">
+            <span>Excellent</span>
+          </label>
+          <label class="grade-label grade-label--good">
+            <input type="radio" name="recitation_grade" value="good" checked>
+            <span>Good</span>
+          </label>
+          <label class="grade-label grade-label--needs_work">
+            <input type="radio" name="recitation_grade" value="needs_work">
+            <span>Needs work</span>
+          </label>
+          <label class="grade-label grade-label--repeat">
+            <input type="radio" name="recitation_grade" value="repeat">
+            <span>Repeat</span>
+          </label>
+        </div>
+
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label" for="notes">Notes</label>
+          <textarea class="form-textarea" id="notes" name="notes" rows="2"
+                    placeholder="Optional notes about this session..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn--primary">Save session</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Last session sidebar -->
+  <div class="session-sidebar">
+    <% if (selectedStudent) { %>
+    <div class="card">
+      <h2 class="card__title"><%= selectedStudent.full_name %></h2>
+      <% if (lastSession) { %>
+      <dl class="detail-list detail-list--sm">
+        <dt>Last session</dt>
+        <dd><%= fmtDate(lastSession.session_date) %></dd>
+        <% if (lastSession.to_surah_name) { %>
+        <dt>Last position</dt>
+        <dd><%= lastSession.to_surah_name %> : <%= lastSession.to_ayah %></dd>
+        <% } else if (lastSession.qaida_to) { %>
+        <dt>Last position</dt>
+        <dd><%= lastSession.qaida_to %></dd>
+        <% } %>
+      </dl>
+      <% } else { %>
+      <p class="empty-state">No previous sessions.</p>
+      <% } %>
+      <div style="margin-top:12px">
+        <a href="/students/<%= selectedStudent.id %>" class="link">View full profile →</a>
+      </div>
+    </div>
+    <% } else { %>
+    <div class="card card--muted">
+      <p class="text-muted">Select a student to see their last session details here.</p>
+    </div>
+    <% } %>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const studentSelect = document.getElementById('student_id');
+  const qaidaFields   = document.getElementById('qaida-fields');
+  const quranFields   = document.getElementById('quran-fields');
+
+  function updateFields() {
+    const opt = studentSelect.options[studentSelect.selectedIndex];
+    const level = opt ? opt.dataset.level : null;
+    qaidaFields.style.display = level === 'qaida' ? '' : 'none';
+    quranFields.style.display = level === 'quran' ? '' : 'none';
+  }
+
+  studentSelect.addEventListener('change', function() {
+    const studentId = studentSelect.value;
+    if (studentId) {
+      window.location.href = '/sessions/log?student_id=' + studentId;
+    }
+  });
+
+  updateFields();
+})();
+</script>
+
+<%- include('../layout/footer') %>

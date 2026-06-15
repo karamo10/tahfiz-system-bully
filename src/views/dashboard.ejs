@@ -1,0 +1,235 @@
+<%
+const activePage   = 'dashboard';
+const pageTitle    = 'Dashboard';
+const flashError   = error;
+const flashSuccess = success;
+const gradeLabel   = { excellent: 'Excellent', good: 'Good', needs_work: 'Needs Work', repeat: 'Repeat' };
+const gradeClass   = { excellent: 'success', good: 'info', needs_work: 'warning', repeat: 'danger' };
+const typeLabel    = { hifz: 'Hifz', muraja: "Muraja'a" };
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('layout/base') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle"><%= monthName %> <%= thisYear %></p>
+  </div>
+  <% if (user.role === 'admin' || user.role === 'secretary') { %>
+  <div class="page-header__actions">
+    <a href="/students/register" class="btn btn--primary">+ Register student</a>
+    <a href="/payments/entry" class="btn btn--outline">Record payment</a>
+  </div>
+  <% } %>
+  <% if (user.role === 'teacher') { %>
+  <div class="page-header__actions">
+    <a href="/sessions/log" class="btn btn--primary">+ Log session</a>
+  </div>
+  <% } %>
+</div>
+
+<!-- ── Admin / Secretary view ── -->
+<% if (user.role === 'admin' || user.role === 'secretary') { %>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__value"><%= stats.totalStudents %></div>
+    <div class="stat-card__label">Active students</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value"><%= stats.totalTeachers %></div>
+    <div class="stat-card__label">Teachers</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value"><%= stats.sessionsToday %></div>
+    <div class="stat-card__label">Sessions today</div>
+  </div>
+  <% if (stats.payments) { %>
+  <div class="stat-card stat-card--warning">
+    <div class="stat-card__value">D <%= (stats.payments.outstanding || 0).toLocaleString('en-GM') %></div>
+    <div class="stat-card__label">Outstanding this month</div>
+  </div>
+  <% } %>
+</div>
+
+<div class="dashboard-grid">
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Recent sessions</h2>
+      <a href="/sessions/log" class="card__action">Log session</a>
+    </div>
+    <% if (stats.recentSessions && stats.recentSessions.length > 0) { %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Teacher</th>
+          <th>Type</th>
+          <th>Progress</th>
+          <th>Grade</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% stats.recentSessions.forEach(function(s) { %>
+        <tr>
+          <td><%= s.student_name %></td>
+          <td><%= s.teacher_name %></td>
+          <td><span class="tag tag--<%= s.type %>"><%= typeLabel[s.type] %></span></td>
+          <td>
+            <% if (s.to_surah_name) { %>
+              <%= s.to_surah_name %> : <%= s.to_ayah %>
+            <% } else if (s.qaida_to) { %>
+              <%= s.qaida_to %>
+            <% } else { %>—<% } %>
+          </td>
+          <td><span class="badge badge--<%= gradeClass[s.recitation_grade] %>"><%= gradeLabel[s.recitation_grade] %></span></td>
+          <td><%= fmtDate(s.session_date) %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } else { %>
+    <p class="empty-state">No sessions logged yet.</p>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">No session this week</h2>
+    </div>
+    <% if (stats.noSessionThisWeek && stats.noSessionThisWeek.length > 0) { %>
+    <ul class="simple-list">
+      <% stats.noSessionThisWeek.forEach(function(s) { %>
+      <li class="simple-list__item">
+        <span><%= s.full_name %></span>
+        <span class="text-muted"><%= s.teacher_name %></span>
+      </li>
+      <% }); %>
+    </ul>
+    <% if (stats.noSessionThisWeek.length >= 10) { %>
+    <p class="text-muted" style="margin-top:8px;font-size:13px">Showing first 10 only</p>
+    <% } %>
+    <% } else { %>
+    <p class="empty-state">All students had a session this week.</p>
+    <% } %>
+  </div>
+</div>
+
+<% if (stats.payments) { %>
+<div class="card" style="margin-top:24px">
+  <div class="card__header">
+    <h2 class="card__title">Payment status — <%= monthName %> <%= thisYear %></h2>
+    <a href="/payments" class="card__action">View all</a>
+  </div>
+  <div class="payment-summary">
+    <div class="payment-summary__item">
+      <span class="payment-summary__count badge badge--success"><%= stats.payments.paid || 0 %></span>
+      <span class="payment-summary__label">Paid</span>
+    </div>
+    <div class="payment-summary__item">
+      <span class="payment-summary__count badge badge--warning"><%= stats.payments.partial || 0 %></span>
+      <span class="payment-summary__label">Partial</span>
+    </div>
+    <div class="payment-summary__item">
+      <span class="payment-summary__count badge badge--danger"><%= stats.payments.unpaid || 0 %></span>
+      <span class="payment-summary__label">Unpaid</span>
+    </div>
+    <div class="payment-summary__item">
+      <span class="payment-summary__count"><%= stats.payments.total || 0 %></span>
+      <span class="payment-summary__label">Total records</span>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<% } %>
+
+<!-- ── Teacher view ── -->
+<% if (user.role === 'teacher') { %>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__value"><%= stats.myStudents %></div>
+    <div class="stat-card__label">My students</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value"><%= stats.sessionsToday %></div>
+    <div class="stat-card__label">Sessions today</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <h2 class="card__title">My students</h2>
+    <a href="/sessions/log" class="card__action">Log session</a>
+  </div>
+  <% if (stats.myStudentList && stats.myStudentList.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Level</th>
+        <th>Last session</th>
+        <th>Position</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% stats.myStudentList.forEach(function(s) { %>
+      <tr>
+        <td><strong><%= s.full_name %></strong></td>
+        <td><span class="tag tag--<%= s.entry_level %>"><%= s.entry_level === 'qaida' ? "Qa'ida" : 'Quran' %></span></td>
+        <td><%= fmtDate(s.last_session) %></td>
+        <td>
+          <% if (s.last_surah) { %>
+            <%= s.last_surah %> : <%= s.last_ayah %>
+          <% } else { %>—<% } %>
+        </td>
+        <td><a href="/students/<%= s.id %>" class="link">View</a></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No students assigned to you yet.</p>
+  <% } %>
+</div>
+
+<div class="card" style="margin-top:24px">
+  <div class="card__header">
+    <h2 class="card__title">Recent sessions</h2>
+  </div>
+  <% if (stats.recentSessions && stats.recentSessions.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr><th>Student</th><th>Type</th><th>Progress</th><th>Grade</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+      <% stats.recentSessions.forEach(function(s) { %>
+      <tr>
+        <td><%= s.student_name %></td>
+        <td><span class="tag tag--<%= s.type %>"><%= typeLabel[s.type] %></span></td>
+        <td>
+          <% if (s.to_surah_name) { %><%= s.to_surah_name %> : <%= s.to_ayah %>
+          <% } else if (s.qaida_to) { %><%= s.qaida_to %>
+          <% } else { %>—<% } %>
+        </td>
+        <td><span class="badge badge--<%= gradeClass[s.recitation_grade] %>"><%= gradeLabel[s.recitation_grade] %></span></td>
+        <td><%= fmtDate(s.session_date) %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } else { %>
+  <p class="empty-state">No sessions logged yet.</p>
+  <% } %>
+</div>
+
+<% } %>
+
+<%- include('layout/footer') %>

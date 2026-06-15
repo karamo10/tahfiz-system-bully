@@ -1,0 +1,167 @@
+<%
+const activePage   = 'students';
+const pageTitle    = student.full_name;
+const flashError   = error;
+const flashSuccess = success;
+const gradeLabel   = { excellent: 'Excellent', good: 'Good', needs_work: 'Needs Work', repeat: 'Repeat' };
+const gradeClass   = { excellent: 'success', good: 'info', needs_work: 'warning', repeat: 'danger' };
+const typeLabel    = { hifz: 'Hifz', muraja: "Muraja'a" };
+const monthNames   = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <p class="page-subtitle"><a href="/students" class="link">← Students</a></p>
+    <h1 class="page-title"><%= student.full_name %></h1>
+  </div>
+  <div class="page-header__actions">
+    <% if (user.role === 'admin' || user.role === 'teacher') { %>
+    <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ Log session</a>
+    <% } %>
+    <% if (user.role === 'admin' || user.role === 'secretary') { %>
+    <a href="/payments/entry?student_id=<%= student.id %>" class="btn btn--outline">Record payment</a>
+    <a href="/students/<%= student.id %>/edit" class="btn btn--outline">Edit</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="detail-grid">
+
+  <!-- Profile card -->
+  <div class="card">
+    <h2 class="card__title">Profile</h2>
+    <dl class="detail-list">
+      <dt>Status</dt>
+      <dd><span class="badge badge--<%= student.status === 'active' ? 'success' : 'neutral' %>"><%= student.status %></span></dd>
+
+      <dt>Teacher</dt>
+      <dd><%= student.teacher_name %></dd>
+
+      <dt>Entry level</dt>
+      <dd>
+        <span class="tag tag--<%= student.entry_level %>">
+          <%= student.entry_level === 'qaida' ? "Qa'ida" : 'Quran' %>
+        </span>
+        <% if (student.qaida_level) { %> — <%= student.qaida_level.replace('_', ' ') %><% } %>
+        <% if (student.entry_surah_name) { %> — <%= student.entry_surah_name %> (<%= student.entry_surah_ar %>) ayah <%= student.entry_ayah %><% } %>
+      </dd>
+
+      <dt>Registered</dt>
+      <dd><%= fmtDate(student.registration_date) %></dd>
+
+      <% if (student.date_of_birth) { %>
+      <dt>Date of birth</dt>
+      <dd><%= fmtDate(student.date_of_birth) %></dd>
+      <% } %>
+
+      <% if (student.phone) { %>
+      <dt>Phone</dt>
+      <dd><%= student.phone %></dd>
+      <% } %>
+
+      <% if (student.guardian_name) { %>
+      <dt>Guardian</dt>
+      <dd><%= student.guardian_name %><% if (student.guardian_phone) { %> &mdash; <%= student.guardian_phone %><% } %></dd>
+      <% } %>
+
+      <% if (student.notes) { %>
+      <dt>Notes</dt>
+      <dd><%= student.notes %></dd>
+      <% } %>
+    </dl>
+  </div>
+
+  <!-- Payment summary -->
+  <% if (user.role === 'admin' || user.role === 'secretary') { %>
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Payments</h2>
+      <a href="/payments/<%= student.id %>" class="card__action">Full history</a>
+    </div>
+    <% if (payments.length > 0) { %>
+    <table class="table">
+      <thead>
+        <tr><th>Period</th><th>Due</th><th>Paid</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <% payments.slice(0, 6).forEach(function(p) { %>
+        <tr>
+          <td><%= monthNames[p.month] %> <%= p.year %></td>
+          <td>D <%= p.amount_due.toLocaleString('en-GM') %></td>
+          <td>D <%= p.amount_paid.toLocaleString('en-GM') %></td>
+          <td><span class="badge badge--<%= p.status === 'paid' ? 'success' : p.status === 'partial' ? 'warning' : 'danger' %>"><%= p.status %></span></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } else { %>
+    <p class="empty-state">No payment records yet. <a href="/payments/entry?student_id=<%= student.id %>">Record one.</a></p>
+    <% } %>
+  </div>
+  <% } %>
+
+</div>
+
+<!-- Session history -->
+<div class="card" style="margin-top:24px">
+  <div class="card__header">
+    <h2 class="card__title">Session history</h2>
+    <% if (user.role === 'admin' || user.role === 'teacher') { %>
+    <a href="/sessions/log?student_id=<%= student.id %>" class="card__action">Log session</a>
+    <% } %>
+  </div>
+
+  <% if (sessions.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Grade</th>
+        <th>Teacher</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% sessions.forEach(function(s) { %>
+      <tr>
+        <td><%= fmtDate(s.session_date) %></td>
+        <td><span class="tag tag--<%= s.type %>"><%= typeLabel[s.type] %></span></td>
+        <td>
+          <% if (s.from_surah_name) { %>
+            <span title="<%= s.from_surah_ar %>"><%= s.from_surah_name %></span> : <%= s.from_ayah %>
+          <% } else if (s.qaida_from) { %>
+            <%= s.qaida_from %>
+          <% } else { %>—<% } %>
+        </td>
+        <td>
+          <% if (s.to_surah_name) { %>
+            <span title="<%= s.to_surah_ar %>"><%= s.to_surah_name %></span> : <%= s.to_ayah %>
+          <% } else if (s.qaida_to) { %>
+            <%= s.qaida_to %>
+          <% } else { %>—<% } %>
+        </td>
+        <td><span class="badge badge--<%= gradeClass[s.recitation_grade] %>"><%= gradeLabel[s.recitation_grade] %></span></td>
+        <td><%= s.teacher_name %></td>
+        <td class="text-muted"><%= s.notes || '' %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% if (sessions.length >= 50) { %>
+  <p class="text-muted" style="padding:12px 16px;font-size:13px">Showing 50 most recent sessions.</p>
+  <% } %>
+  <% } else { %>
+  <p class="empty-state">No sessions logged yet.</p>
+  <% } %>
+</div>
+
+<%- include('../layout/footer') %>

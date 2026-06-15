@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Tahfiz System</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="body--auth">
+
+  <div class="auth">
+    <div class="auth__header">
+      <div class="auth__logo">☽</div>
+      <h1 class="auth__title">Tahfiz System</h1>
+      <p class="auth__subtitle">Sign in to your account</p>
+    </div>
+
+    <% if (error && error.length > 0) { %>
+      <% error.forEach(function(msg) { %>
+        <div class="alert alert--error"><%= msg %></div>
+      <% }); %>
+    <% } %>
+
+    <form class="auth__form" action="/login" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="email">Email address</label>
+        <input class="form-input" type="email" id="email" name="email"
+               placeholder="you@tahfiz.gm" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input class="form-input" type="password" id="password" name="password"
+               placeholder="Your password" required>
+      </div>
+
+      <button class="btn btn--primary btn--full" type="submit">Sign in</button>
+    </form>
+  </div>
+
+</body>
+</html>

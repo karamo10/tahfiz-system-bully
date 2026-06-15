@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '' %>Tahfiz System</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__brand">
+      <span class="nav__logo">&#9789;</span>
+      <span class="nav__name">Tahfiz System</span>
+    </div>
+
+    <% if (user) { %>
+    <ul class="nav__links">
+      <li><a href="/" class="nav__link <%= activePage === 'dashboard' ? 'nav__link--active' : '' %>">Dashboard</a></li>
+      <li><a href="/students" class="nav__link <%= activePage === 'students' ? 'nav__link--active' : '' %>">Students</a></li>
+      <% if (user.role === 'admin' || user.role === 'teacher') { %>
+      <li><a href="/sessions/log" class="nav__link <%= activePage === 'sessions' ? 'nav__link--active' : '' %>">Log Session</a></li>
+      <% } %>
+      <% if (user.role === 'admin' || user.role === 'secretary') { %>
+      <li><a href="/payments" class="nav__link <%= activePage === 'payments' ? 'nav__link--active' : '' %>">Payments</a></li>
+      <% } %>
+      <% if (user.role === 'admin') { %>
+      <li><a href="/users" class="nav__link <%= activePage === 'users' ? 'nav__link--active' : '' %>">Users</a></li>
+      <% } %>
+    </ul>
+
+    <div class="nav__user">
+      <span class="nav__user-name"><%= user.full_name %></span>
+      <span class="role-badge role-badge--<%= user.role %>"><%= user.role %></span>
+      <form action="/logout" method="POST" style="display:inline;margin-left:12px">
+        <button type="submit" class="nav__logout">Sign out</button>
+      </form>
+    </div>
+    <% } %>
+  </nav>
+
+  <main class="main">
+    <% if (typeof flashError !== 'undefined' && flashError && flashError.length > 0) { %>
+      <% flashError.forEach(function(msg) { %>
+        <div class="alert alert--error"><%= msg %></div>
+      <% }); %>
+    <% } %>
+    <% if (typeof flashSuccess !== 'undefined' && flashSuccess && flashSuccess.length > 0) { %>
+      <% flashSuccess.forEach(function(msg) { %>
+        <div class="alert alert--success"><%= msg %></div>
+      <% }); %>
+    <% } %>
+

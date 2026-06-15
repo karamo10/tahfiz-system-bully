@@ -1,0 +1,156 @@
+<%
+const activePage   = 'payments';
+const pageTitle    = 'Record Payment';
+const flashError   = error;
+const flashSuccess = success;
+%>
+<%- include('../layout/base') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Record payment</h1>
+    <p class="page-subtitle"><a href="/payments" class="link">← Payments</a></p>
+  </div>
+</div>
+
+<div class="form-card">
+  <form action="/payments/entry" method="POST" id="payment-form">
+
+    <div class="form-section">
+      <h2 class="form-section__title">Payment details</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label form-label--required" for="student_id">Student</label>
+          <select class="form-select" id="student_id" name="student_id" required>
+            <option value="">— Select student —</option>
+            <% students.forEach(function(s) { %>
+            <option value="<%= s.id %>" <%= preselect && parseInt(preselect) === s.id ? 'selected' : '' %>><%= s.full_name %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label form-label--required" for="month">Month</label>
+          <select class="form-select" id="month" name="month" required>
+            <% for (let i = 1; i <= 12; i++) { %>
+            <option value="<%= i %>" <%= i === currentMonth ? 'selected' : '' %>><%= months[i] %></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label form-label--required" for="year">Year</label>
+          <input class="form-input" type="number" id="year" name="year"
+                 value="<%= currentYear %>" min="2020" max="2099" required>
+        </div>
+      </div>
+
+      <!-- Existing record notice (populated by JS) -->
+      <div id="existing-notice" class="notice notice--info" style="display:none">
+        <strong>Existing record found.</strong> Saving will update this month's record.
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label form-label--required" for="amount_due">Amount due (GMD)</label>
+          <div class="input-prefix">
+            <span class="input-prefix__symbol">D</span>
+            <input class="form-input" type="number" id="amount_due" name="amount_due"
+                   min="0" step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label form-label--required" for="amount_paid">Amount paid (GMD)</label>
+          <div class="input-prefix">
+            <span class="input-prefix__symbol">D</span>
+            <input class="form-input" type="number" id="amount_paid" name="amount_paid"
+                   min="0" step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="paid_date">Date paid</label>
+          <input class="form-input" type="date" id="paid_date" name="paid_date">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Notes</label>
+          <input class="form-input" type="text" id="notes" name="notes"
+                 placeholder="Optional notes...">
+        </div>
+      </div>
+
+      <!-- Live status preview -->
+      <div id="status-preview" class="notice" style="display:none"></div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/payments" class="btn btn--outline">Cancel</a>
+      <button type="submit" class="btn btn--primary">Save payment</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+(function() {
+  const studentSel   = document.getElementById('student_id');
+  const monthSel     = document.getElementById('month');
+  const yearInput    = document.getElementById('year');
+  const amountDue    = document.getElementById('amount_due');
+  const amountPaid   = document.getElementById('amount_paid');
+  const notice       = document.getElementById('existing-notice');
+  const preview      = document.getElementById('status-preview');
+
+  function lookup() {
+    const sid = studentSel.value;
+    const m   = monthSel.value;
+    const y   = yearInput.value;
+    if (!sid || !m || !y) return;
+
+    fetch(`/payments/lookup?student_id=${sid}&month=${m}&year=${y}`)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data) {
+          notice.style.display = '';
+          amountDue.value  = data.amount_due;
+          amountPaid.value = data.amount_paid;
+          document.getElementById('paid_date').value = data.paid_date || '';
+          document.getElementById('notes').value = data.notes || '';
+        } else {
+          notice.style.display = 'none';
+          amountDue.value  = '';
+          amountPaid.value = '';
+        }
+        updatePreview();
+      });
+  }
+
+  function updatePreview() {
+    const due  = parseFloat(amountDue.value)  || 0;
+    const paid = parseFloat(amountPaid.value) || 0;
+    if (due === 0 && paid === 0) { preview.style.display = 'none'; return; }
+    let status, cls;
+    if (paid >= due) { status = 'Paid'; cls = 'notice--success'; }
+    else if (paid > 0) { status = 'Partial — D ' + (due - paid).toFixed(2) + ' remaining'; cls = 'notice--warning'; }
+    else { status = 'Unpaid'; cls = 'notice--danger'; }
+    preview.className = 'notice ' + cls;
+    preview.textContent = 'Status will be: ' + status;
+    preview.style.display = '';
+  }
+
+  studentSel.addEventListener('change', lookup);
+  monthSel.addEventListener('change', lookup);
+  yearInput.addEventListener('change', lookup);
+  amountDue.addEventListener('input', updatePreview);
+  amountPaid.addEventListener('input', updatePreview);
+
+  // Auto-lookup if student preselected
+  if (studentSel.value) lookup();
+})();
+</script>
+
+<%- include('../layout/footer') %>
