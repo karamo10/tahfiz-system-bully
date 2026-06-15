@@ -50,6 +50,7 @@ function fmtDate(d) {
 
 <div class="card">
   <% if (payments.length > 0) { %>
+  <div class="table-wrap">
   <table class="table table--hoverable">
     <thead>
       <tr>
@@ -82,6 +83,7 @@ function fmtDate(d) {
       <% }); %>
     </tbody>
   </table>
+  </div>
   <% } else { %>
   <p class="empty-state">No payment records for this period.</p>
   <% } %>
@@ -93,6 +95,7 @@ function fmtDate(d) {
     <h2 class="card__title">No record this month (<%= noRecord.length %>)</h2>
   </div>
   <p class="text-muted" style="padding:0 16px 8px">Active students with no payment entry for <%= months[selectedMonth] %> <%= selectedYear %>.</p>
+  <div class="table-wrap">
   <table class="table">
     <thead><tr><th>Student</th><th></th></tr></thead>
     <tbody>
@@ -104,6 +107,7 @@ function fmtDate(d) {
       <% }); %>
     </tbody>
   </table>
+  </div>
 </div>
 <% } %>
 
