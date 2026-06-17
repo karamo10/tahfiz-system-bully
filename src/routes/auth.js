@@ -6,11 +6,7 @@ const router = express.Router();
 // GET /login
 router.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/');
-  res.render('auth/login', {
-    user: null,
-    error: req.flash('error'),
-    success: req.flash('success'),
-  });
+  res.render('auth/login', { user: null });
 });
 
 // POST /login
