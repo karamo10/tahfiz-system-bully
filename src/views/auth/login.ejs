@@ -21,11 +21,12 @@
       <p class="auth__subtitle"><%= t.signIn %></p>
     </div>
 
-    <% if (error && error.length > 0) { %>
-      <% error.forEach(function(msg) { %>
-        <div class="alert alert--error"><%= msg %></div>
-      <% }); %>
-    <% } %>
+   <% const loginError = (typeof error !== 'undefined' && error && error.length > 0) ? error : (typeof locals.error !== 'undefined' ? locals.error : []); %>
+<% if (loginError && loginError.length > 0) { %>
+  <% loginError.forEach(function(msg) { %>
+    <div class="alert alert--error"><%= msg %></div>
+  <% }); %>
+<% } %>
 
     <form class="auth__form" action="/login" method="POST">
       <div class="form-group">
