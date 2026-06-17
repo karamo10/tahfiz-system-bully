@@ -17,10 +17,10 @@ function fmtDate(d) {
 <div class="page-header">
   <div>
     <p class="page-subtitle"><a href="/students/<%= student.id %>" class="link">← <%= student.full_name %></a></p>
-    <h1 class="page-title">Full session history</h1>
+    <h1 class="page-title"><%= t.sessionHistory %></h1>
   </div>
   <% if (user.role === 'admin' || user.role === 'teacher') { %>
-  <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ Log session</a>
+  <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ <%= t.logSession %></a>
   <% } %>
 </div>
 
@@ -29,13 +29,13 @@ function fmtDate(d) {
   <table class="table">
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Type</th>
+        <th><%= t.date %></th>
+        <th><%= t.type %></th>
         <th>From</th>
         <th>To</th>
-        <th>Grade</th>
-        <th>Teacher</th>
-        <th>Notes</th>
+        <th><%= t.grade %></th>
+        <th><%= t.teacher %></th>
+        <th><%= t.notes %></th>
       </tr>
     </thead>
     <tbody>

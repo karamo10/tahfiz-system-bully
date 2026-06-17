@@ -628,3 +628,53 @@ input, select, textarea, button { font-size: inherit; font-family: inherit; }
   .auth { padding: var(--spacing-lg); }
   .stat-grid { grid-template-columns: 1fr; }
 }
+
+/* ── RTL (Arabic) ───────────────────────────────────────────── */
+body.rtl {
+  font-family: 'Tahoma', 'Arabic Typesetting', 'Segoe UI', sans-serif;
+  text-align: right;
+}
+body.rtl .nav {
+  flex-direction: row-reverse;
+}
+body.rtl .nav__links {
+  flex-direction: row-reverse;
+}
+body.rtl .nav__user {
+  flex-direction: row-reverse;
+}
+body.rtl .page-header {
+  flex-direction: row-reverse;
+}
+body.rtl .alert--error,
+body.rtl .alert--success {
+  border-left: none;
+  border-right: 4px solid;
+}
+body.rtl .notice--info,
+body.rtl .notice--warning,
+body.rtl .notice--success,
+body.rtl .notice--danger {
+  border-left: none;
+  border-right: 3px solid;
+}
+body.rtl .detail-list {
+  direction: rtl;
+}
+body.rtl .card__header {
+  flex-direction: row-reverse;
+}
+body.rtl .filter-bar {
+  flex-direction: row-reverse;
+}
+body.rtl table {
+  direction: rtl;
+}
+body.rtl .input-prefix__symbol {
+  left: auto;
+  right: 10px;
+}
+body.rtl .input-prefix .form-input {
+  padding-left: var(--spacing-sm);
+  padding-right: 26px;
+}

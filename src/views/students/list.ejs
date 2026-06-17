@@ -7,10 +7,10 @@ const flashSuccess = success;
 <%- include('../layout/base') %>
 
 <div class="page-header">
-  <h1 class="page-title">Students</h1>
+  <h1 class="page-title"><%= t.students %></h1>
   <% if (user.role === 'admin' || user.role === 'secretary') { %>
   <div class="page-header__actions">
-    <a href="/students/register" class="btn btn--primary">+ Register student</a>
+    <a href="/students/register" class="btn btn--primary"><%= t.registerStudent %></a>
   </div>
   <% } %>
 </div>
@@ -21,12 +21,12 @@ const flashSuccess = success;
   <table class="table table--hoverable">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Level</th>
-        <th>Teacher</th>
-        <th>Guardian</th>
-        <th>Registered</th>
-        <th>Status</th>
+        <th><%= t.name %></th>
+        <th><%= t.level %></th>
+        <th><%= t.teacher %></th>
+        <th><%= t.guardian %></th>
+        <th><%= t.registered %></th>
+        <th><%= t.status %></th>
         <th></th>
       </tr>
     </thead>
@@ -49,10 +49,10 @@ const flashSuccess = success;
         %></td>
         <td>
           <span class="badge badge--<%= s.status === 'active' ? 'success' : s.status === 'completed' ? 'info' : 'neutral' %>">
-            <%= s.status %>
+            <%= s.status === 'active' ? t.active : s.status === 'completed' ? t.completed : t.inactive %>
           </span>
         </td>
-        <td><a href="/students/<%= s.id %>" class="link">View</a></td>
+        <td><a href="/students/<%= s.id %>" class="link"><%= t.view %></a></td>
       </tr>
       <% }); %>
     </tbody>

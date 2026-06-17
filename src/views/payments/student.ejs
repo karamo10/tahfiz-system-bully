@@ -16,21 +16,21 @@ function fmtDate(d) {
     <p class="page-subtitle"><a href="/students/<%= student.id %>" class="link">← <%= student.full_name %></a></p>
     <h1 class="page-title">Payment history</h1>
   </div>
-  <a href="/payments/entry?student_id=<%= student.id %>" class="btn btn--primary">+ Record payment</a>
+  <a href="/payments/entry?student_id=<%= student.id %>" class="btn btn--primary"><%= t.recordPayment %></a>
 </div>
 
 <div class="stat-grid" style="margin-bottom:24px">
   <div class="stat-card stat-card--success">
     <div class="stat-card__value">D <%= totals.paid.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Total paid</div>
+    <div class="stat-card__label"><%= t.collected %></div>
   </div>
   <div class="stat-card stat-card--warning">
     <div class="stat-card__value">D <%= totals.outstanding.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Outstanding</div>
+    <div class="stat-card__label"><%= t.outstanding %></div>
   </div>
   <div class="stat-card">
     <div class="stat-card__value">D <%= totals.due.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Total due</div>
+    <div class="stat-card__label"><%= t.totalDue %></div>
   </div>
 </div>
 
@@ -40,11 +40,11 @@ function fmtDate(d) {
     <thead>
       <tr>
         <th>Period</th>
-        <th>Amount due</th>
-        <th>Amount paid</th>
-        <th>Balance</th>
-        <th>Status</th>
-        <th>Paid date</th>
+        <th><%= t.amountDue %></th>
+        <th><%= t.amountPaid %></th>
+        <th><%= t.balance %></th>
+        <th><%= t.status %></th>
+        <th><%= t.paidDate %></th>
         <th>Recorded by</th>
       </tr>
     </thead>

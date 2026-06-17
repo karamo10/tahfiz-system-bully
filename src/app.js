@@ -1,11 +1,12 @@
 require('dotenv').config();
-const express    = require('express');
-const session    = require('express-session');
-const FileStore  = require('session-file-store')(session);
-const flash      = require('connect-flash');
-const path       = require('path');
-const fs         = require('fs');
-const db         = require('./db/database');
+const express      = require('express');
+const session      = require('express-session');
+const FileStore    = require('session-file-store')(session);
+const flash        = require('connect-flash');
+const path         = require('path');
+const fs           = require('fs');
+const db           = require('./db/database');
+const translations = require('./i18n/translations');
 
 const authRoutes     = require('./routes/auth');
 const studentRoutes  = require('./routes/students');
@@ -49,10 +50,13 @@ app.use(flash());
 // ── Locals available in all templates ────────────────────────────────────────
 
 app.use((req, res, next) => {
-  res.locals.user    = req.session.user || null;
-  res.locals.error   = req.flash('error');
-  res.locals.success = req.flash('success');
+  res.locals.user       = req.session.user || null;
+  res.locals.error      = req.flash('error');
+  res.locals.success    = req.flash('success');
   res.locals.activePage = req.path.split('/')[1] || 'dashboard';
+  const lang            = req.session.lang || 'en';
+  res.locals.lang       = lang;
+  res.locals.t          = translations[lang];
   next();
 });
 
@@ -205,6 +209,16 @@ app.post('/users/:id/toggle', requireAuth, requireRole('admin'), (req, res) => {
   db.prepare('UPDATE user SET is_active = ? WHERE id = ?').run(target.is_active ? 0 : 1, target.id);
   req.flash('success', `${target.full_name} has been ${target.is_active ? 'deactivated' : 'activated'}.`);
   res.redirect('/users');
+});
+
+// ── Language toggle ───────────────────────────────────────────────────────────
+
+app.post('/lang', (req, res) => {
+  const current = req.session.lang || 'en';
+  req.session.lang = current === 'en' ? 'ar' : 'en';
+  req.session.save(() => {
+    res.redirect(req.get('Referer') || '/');
+  });
 });
 
 // ── 404 ───────────────────────────────────────────────────────────────────────

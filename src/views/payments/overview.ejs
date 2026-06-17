@@ -13,11 +13,11 @@ function fmtDate(d) {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Payments</h1>
+    <h1 class="page-title"><%= t.payments %></h1>
     <p class="page-subtitle"><%= months[selectedMonth] %> <%= selectedYear %></p>
   </div>
   <div class="page-header__actions">
-    <a href="/payments/entry" class="btn btn--primary">+ Record payment</a>
+    <a href="/payments/entry" class="btn btn--primary"><%= t.recordPayment %></a>
   </div>
 </div>
 
@@ -36,15 +36,15 @@ function fmtDate(d) {
 <div class="stat-grid" style="margin-bottom:24px">
   <div class="stat-card stat-card--success">
     <div class="stat-card__value">D <%= totals.paid.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Collected</div>
+    <div class="stat-card__label"><%= t.collected %></div>
   </div>
   <div class="stat-card stat-card--warning">
     <div class="stat-card__value">D <%= totals.outstanding.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Outstanding</div>
+    <div class="stat-card__label"><%= t.outstanding %></div>
   </div>
   <div class="stat-card">
     <div class="stat-card__value">D <%= totals.due.toLocaleString('en-GM') %></div>
-    <div class="stat-card__label">Total due</div>
+    <div class="stat-card__label"><%= t.totalDue %></div>
   </div>
 </div>
 
@@ -54,12 +54,12 @@ function fmtDate(d) {
   <table class="table table--hoverable">
     <thead>
       <tr>
-        <th>Student</th>
-        <th>Amount due</th>
-        <th>Amount paid</th>
-        <th>Balance</th>
-        <th>Status</th>
-        <th>Paid date</th>
+        <th><%= t.student %></th>
+        <th><%= t.amountDue %></th>
+        <th><%= t.amountPaid %></th>
+        <th><%= t.balance %></th>
+        <th><%= t.status %></th>
+        <th><%= t.paidDate %></th>
         <th></th>
       </tr>
     </thead>
@@ -77,7 +77,7 @@ function fmtDate(d) {
         </td>
         <td><%= fmtDate(p.paid_date) %></td>
         <td>
-          <a href="/payments/entry?student_id=<%= p.student_id %>" class="link">Edit</a>
+          <a href="/payments/entry?student_id=<%= p.student_id %>" class="link"><%= t.edit %></a>
         </td>
       </tr>
       <% }); %>
@@ -97,12 +97,12 @@ function fmtDate(d) {
   <p class="text-muted" style="padding:0 16px 8px">Active students with no payment entry for <%= months[selectedMonth] %> <%= selectedYear %>.</p>
   <div class="table-wrap">
   <table class="table">
-    <thead><tr><th>Student</th><th></th></tr></thead>
+    <thead><tr><th><%= t.student %></th><th></th></tr></thead>
     <tbody>
       <% noRecord.forEach(function(s) { %>
       <tr>
         <td><a href="/students/<%= s.id %>" class="link"><%= s.full_name %></a></td>
-        <td><a href="/payments/entry?student_id=<%= s.id %>" class="link">Record payment</a></td>
+        <td><a href="/payments/entry?student_id=<%= s.id %>" class="link"><%= t.recordPayment %></a></td>
       </tr>
       <% }); %>
     </tbody>

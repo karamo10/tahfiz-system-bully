@@ -16,18 +16,18 @@ function fmtDate(d) {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Dashboard</h1>
+    <h1 class="page-title"><%= t.dashboard %></h1>
     <p class="page-subtitle"><%= monthName %> <%= thisYear %></p>
   </div>
   <% if (user.role === 'admin' || user.role === 'secretary') { %>
   <div class="page-header__actions">
-    <a href="/students/register" class="btn btn--primary">+ Register student</a>
+    <a href="/students/register" class="btn btn--primary"><%= t.registerStudent %></a>
     <a href="/payments/entry" class="btn btn--outline">Record payment</a>
   </div>
   <% } %>
   <% if (user.role === 'teacher') { %>
   <div class="page-header__actions">
-    <a href="/sessions/log" class="btn btn--primary">+ Log session</a>
+    <a href="/sessions/log" class="btn btn--primary">+ <%= t.logSession %></a>
   </div>
   <% } %>
 </div>
@@ -38,15 +38,15 @@ function fmtDate(d) {
 <div class="stat-grid">
   <div class="stat-card">
     <div class="stat-card__value"><%= stats.totalStudents %></div>
-    <div class="stat-card__label">Active students</div>
+    <div class="stat-card__label"><%= t.totalStudents %></div>
   </div>
   <div class="stat-card">
     <div class="stat-card__value"><%= stats.totalTeachers %></div>
-    <div class="stat-card__label">Teachers</div>
+    <div class="stat-card__label"><%= t.totalTeachers %></div>
   </div>
   <div class="stat-card">
     <div class="stat-card__value"><%= stats.sessionsToday %></div>
-    <div class="stat-card__label">Sessions today</div>
+    <div class="stat-card__label"><%= t.sessionsToday %></div>
   </div>
   <% if (stats.payments) { %>
   <div class="stat-card stat-card--warning">
@@ -59,19 +59,19 @@ function fmtDate(d) {
 <div class="dashboard-grid">
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Recent sessions</h2>
-      <a href="/sessions/log" class="card__action">Log session</a>
+      <h2 class="card__title"><%= t.recentSessions %></h2>
+      <a href="/sessions/log" class="card__action"><%= t.logSession %></a>
     </div>
     <% if (stats.recentSessions && stats.recentSessions.length > 0) { %>
     <table class="table">
       <thead>
         <tr>
-          <th>Student</th>
-          <th>Teacher</th>
-          <th>Type</th>
+          <th><%= t.student %></th>
+          <th><%= t.teacher %></th>
+          <th><%= t.type %></th>
           <th>Progress</th>
-          <th>Grade</th>
-          <th>Date</th>
+          <th><%= t.grade %></th>
+          <th><%= t.date %></th>
         </tr>
       </thead>
       <tbody>
@@ -159,21 +159,21 @@ function fmtDate(d) {
   </div>
   <div class="stat-card">
     <div class="stat-card__value"><%= stats.sessionsToday %></div>
-    <div class="stat-card__label">Sessions today</div>
+    <div class="stat-card__label"><%= t.sessionsToday %></div>
   </div>
 </div>
 
 <div class="card">
   <div class="card__header">
     <h2 class="card__title">My students</h2>
-    <a href="/sessions/log" class="card__action">Log session</a>
+    <a href="/sessions/log" class="card__action"><%= t.logSession %></a>
   </div>
   <% if (stats.myStudentList && stats.myStudentList.length > 0) { %>
   <table class="table">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Level</th>
+        <th><%= t.name %></th>
+        <th><%= t.level %></th>
         <th>Last session</th>
         <th>Position</th>
         <th></th>
@@ -190,7 +190,7 @@ function fmtDate(d) {
             <%= s.last_surah %> : <%= s.last_ayah %>
           <% } else { %>—<% } %>
         </td>
-        <td><a href="/students/<%= s.id %>" class="link">View</a></td>
+        <td><a href="/students/<%= s.id %>" class="link"><%= t.view %></a></td>
       </tr>
       <% }); %>
     </tbody>
@@ -202,12 +202,12 @@ function fmtDate(d) {
 
 <div class="card" style="margin-top:24px">
   <div class="card__header">
-    <h2 class="card__title">Recent sessions</h2>
+    <h2 class="card__title"><%= t.recentSessions %></h2>
   </div>
   <% if (stats.recentSessions && stats.recentSessions.length > 0) { %>
   <table class="table">
     <thead>
-      <tr><th>Student</th><th>Type</th><th>Progress</th><th>Grade</th><th>Date</th></tr>
+      <tr><th><%= t.student %></th><th><%= t.type %></th><th>Progress</th><th><%= t.grade %></th><th><%= t.date %></th></tr>
     </thead>
     <tbody>
       <% stats.recentSessions.forEach(function(s) { %>

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= lang %>" <%= lang === 'ar' ? 'dir="rtl"' : '' %>>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '' %>Tahfiz System</title>
   <link rel="stylesheet" href="/css/main.css">
 </head>
-<body>
+<body class="<%= lang === 'ar' ? 'rtl' : '' %>">
   <nav class="nav">
     <div class="nav__brand">
       <span class="nav__logo">&#9789;</span>
@@ -15,24 +15,27 @@
 
     <% if (user) { %>
     <ul class="nav__links">
-      <li><a href="/" class="nav__link <%= activePage === 'dashboard' ? 'nav__link--active' : '' %>">Dashboard</a></li>
-      <li><a href="/students" class="nav__link <%= activePage === 'students' ? 'nav__link--active' : '' %>">Students</a></li>
+      <li><a href="/" class="nav__link <%= activePage === 'dashboard' ? 'nav__link--active' : '' %>"><%= t.dashboard %></a></li>
+      <li><a href="/students" class="nav__link <%= activePage === 'students' ? 'nav__link--active' : '' %>"><%= t.students %></a></li>
       <% if (user.role === 'admin' || user.role === 'teacher') { %>
-      <li><a href="/sessions/log" class="nav__link <%= activePage === 'sessions' ? 'nav__link--active' : '' %>">Log Session</a></li>
+      <li><a href="/sessions/log" class="nav__link <%= activePage === 'sessions' ? 'nav__link--active' : '' %>"><%= t.logSession %></a></li>
       <% } %>
       <% if (user.role === 'admin' || user.role === 'secretary') { %>
-      <li><a href="/payments" class="nav__link <%= activePage === 'payments' ? 'nav__link--active' : '' %>">Payments</a></li>
+      <li><a href="/payments" class="nav__link <%= activePage === 'payments' ? 'nav__link--active' : '' %>"><%= t.payments %></a></li>
       <% } %>
       <% if (user.role === 'admin') { %>
-      <li><a href="/users" class="nav__link <%= activePage === 'users' ? 'nav__link--active' : '' %>">Users</a></li>
+      <li><a href="/users" class="nav__link <%= activePage === 'users' ? 'nav__link--active' : '' %>"><%= t.users %></a></li>
       <% } %>
     </ul>
 
     <div class="nav__user">
       <span class="nav__user-name"><%= user.full_name %></span>
       <span class="role-badge role-badge--<%= user.role %>"><%= user.role %></span>
+      <form action="/lang" method="POST" style="display:inline;">
+        <button type="submit" class="nav__logout"><%= t.switchLang %></button>
+      </form>
       <form action="/logout" method="POST" style="display:inline;margin-left:12px">
-        <button type="submit" class="nav__logout">Sign out</button>
+        <button type="submit" class="nav__logout"><%= t.signOut %></button>
       </form>
     </div>
 
@@ -40,16 +43,16 @@
 
     <div class="nav__mobile-menu">
       <ul class="nav__mobile-links">
-        <li><a href="/" class="nav__mobile-link <%= activePage === 'dashboard' ? 'nav__mobile-link--active' : '' %>">Dashboard</a></li>
-        <li><a href="/students" class="nav__mobile-link <%= activePage === 'students' ? 'nav__mobile-link--active' : '' %>">Students</a></li>
+        <li><a href="/" class="nav__mobile-link <%= activePage === 'dashboard' ? 'nav__mobile-link--active' : '' %>"><%= t.dashboard %></a></li>
+        <li><a href="/students" class="nav__mobile-link <%= activePage === 'students' ? 'nav__mobile-link--active' : '' %>"><%= t.students %></a></li>
         <% if (user.role === 'admin' || user.role === 'teacher') { %>
-        <li><a href="/sessions/log" class="nav__mobile-link <%= activePage === 'sessions' ? 'nav__mobile-link--active' : '' %>">Log Session</a></li>
+        <li><a href="/sessions/log" class="nav__mobile-link <%= activePage === 'sessions' ? 'nav__mobile-link--active' : '' %>"><%= t.logSession %></a></li>
         <% } %>
         <% if (user.role === 'admin' || user.role === 'secretary') { %>
-        <li><a href="/payments" class="nav__mobile-link <%= activePage === 'payments' ? 'nav__mobile-link--active' : '' %>">Payments</a></li>
+        <li><a href="/payments" class="nav__mobile-link <%= activePage === 'payments' ? 'nav__mobile-link--active' : '' %>"><%= t.payments %></a></li>
         <% } %>
         <% if (user.role === 'admin') { %>
-        <li><a href="/users" class="nav__mobile-link <%= activePage === 'users' ? 'nav__mobile-link--active' : '' %>">Users</a></li>
+        <li><a href="/users" class="nav__mobile-link <%= activePage === 'users' ? 'nav__mobile-link--active' : '' %>"><%= t.users %></a></li>
         <% } %>
       </ul>
       <div class="nav__mobile-footer">
@@ -57,8 +60,11 @@
           <%= user.full_name %>
           <span class="role-badge role-badge--<%= user.role %>"><%= user.role %></span>
         </span>
+        <form action="/lang" method="POST" style="margin-bottom:8px">
+          <button type="submit" class="nav__logout nav__logout--full"><%= t.switchLang %></button>
+        </form>
         <form action="/logout" method="POST">
-          <button type="submit" class="nav__logout nav__logout--full">Sign out</button>
+          <button type="submit" class="nav__logout nav__logout--full"><%= t.signOut %></button>
         </form>
       </div>
     </div>

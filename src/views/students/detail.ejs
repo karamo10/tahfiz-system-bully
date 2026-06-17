@@ -17,16 +17,16 @@ function fmtDate(d) {
 
 <div class="page-header">
   <div>
-    <p class="page-subtitle"><a href="/students" class="link">← Students</a></p>
+    <p class="page-subtitle"><a href="/students" class="link">← <%= t.students %></a></p>
     <h1 class="page-title"><%= student.full_name %></h1>
   </div>
   <div class="page-header__actions">
     <% if (user.role === 'admin' || user.role === 'teacher') { %>
-    <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ Log session</a>
+    <a href="/sessions/log?student_id=<%= student.id %>" class="btn btn--primary">+ <%= t.logSession %></a>
     <% } %>
     <% if (user.role === 'admin' || user.role === 'secretary') { %>
     <a href="/payments/entry?student_id=<%= student.id %>" class="btn btn--outline">Record payment</a>
-    <a href="/students/<%= student.id %>/edit" class="btn btn--outline">Edit</a>
+    <a href="/students/<%= student.id %>/edit" class="btn btn--outline"><%= t.edit %></a>
     <% } %>
   </div>
 </div>
@@ -37,10 +37,10 @@ function fmtDate(d) {
   <div class="card">
     <h2 class="card__title">Profile</h2>
     <dl class="detail-list">
-      <dt>Status</dt>
-      <dd><span class="badge badge--<%= student.status === 'active' ? 'success' : 'neutral' %>"><%= student.status %></span></dd>
+      <dt><%= t.status %></dt>
+      <dd><span class="badge badge--<%= student.status === 'active' ? 'success' : 'neutral' %>"><%= student.status === 'active' ? t.active : student.status === 'completed' ? t.completed : t.inactive %></span></dd>
 
-      <dt>Teacher</dt>
+      <dt><%= t.teacher %></dt>
       <dd><%= student.teacher_name %></dd>
 
       <dt>Entry level</dt>
@@ -52,7 +52,7 @@ function fmtDate(d) {
         <% if (student.entry_surah_name) { %> — <%= student.entry_surah_name %> (<%= student.entry_surah_ar %>) ayah <%= student.entry_ayah %><% } %>
       </dd>
 
-      <dt>Registered</dt>
+      <dt><%= t.registered %></dt>
       <dd><%= fmtDate(student.registration_date) %></dd>
 
       <% if (student.date_of_birth) { %>
@@ -66,12 +66,12 @@ function fmtDate(d) {
       <% } %>
 
       <% if (student.guardian_name) { %>
-      <dt>Guardian</dt>
+      <dt><%= t.guardian %></dt>
       <dd><%= student.guardian_name %><% if (student.guardian_phone) { %> &mdash; <%= student.guardian_phone %><% } %></dd>
       <% } %>
 
       <% if (student.notes) { %>
-      <dt>Notes</dt>
+      <dt><%= t.notes %></dt>
       <dd><%= student.notes %></dd>
       <% } %>
     </dl>
@@ -81,13 +81,13 @@ function fmtDate(d) {
   <% if (user.role === 'admin' || user.role === 'secretary') { %>
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Payments</h2>
+      <h2 class="card__title"><%= t.payments %></h2>
       <a href="/payments/<%= student.id %>" class="card__action">Full history</a>
     </div>
     <% if (payments.length > 0) { %>
     <table class="table">
       <thead>
-        <tr><th>Period</th><th>Due</th><th>Paid</th><th>Status</th></tr>
+        <tr><th>Period</th><th>Due</th><th>Paid</th><th><%= t.status %></th></tr>
       </thead>
       <tbody>
         <% payments.slice(0, 6).forEach(function(p) { %>
@@ -111,9 +111,9 @@ function fmtDate(d) {
 <!-- Session history -->
 <div class="card" style="margin-top:24px">
   <div class="card__header">
-    <h2 class="card__title">Session history</h2>
+    <h2 class="card__title"><%= t.sessionHistory %></h2>
     <% if (user.role === 'admin' || user.role === 'teacher') { %>
-    <a href="/sessions/log?student_id=<%= student.id %>" class="card__action">Log session</a>
+    <a href="/sessions/log?student_id=<%= student.id %>" class="card__action"><%= t.logSession %></a>
     <% } %>
   </div>
 
@@ -121,13 +121,13 @@ function fmtDate(d) {
   <table class="table">
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Type</th>
+        <th><%= t.date %></th>
+        <th><%= t.type %></th>
         <th>From</th>
         <th>To</th>
-        <th>Grade</th>
-        <th>Teacher</th>
-        <th>Notes</th>
+        <th><%= t.grade %></th>
+        <th><%= t.teacher %></th>
+        <th><%= t.notes %></th>
       </tr>
     </thead>
     <tbody>
